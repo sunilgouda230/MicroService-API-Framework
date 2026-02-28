@@ -10,32 +10,38 @@ import models.response.Booking.BookingResponse;
 
 import java.util.List;
 
-public class BookingService extends AuthService{
+public class BookingService extends AuthService {
 
-    private static final String BASE_URL = ConfigManager.get("base.url");
+    private String getBaseUrl() {
+        String baseUrl = ConfigManager.get("base.url");
+        if (baseUrl == null || baseUrl.isBlank()) {
+            throw new RuntimeException("BASE_URL is not configured properly.");
+        }
+        return baseUrl;
+    }
 
     public List<BookingResponse> getBookings() {
 
-        Response response = get(BASE_URL + "/booking");
-
-        if (response.getStatusCode() != 200) {
-            handleResponse(response, ErrorResponse.class, ErrorResponse.class);
-        }
+        Response response = get(getBaseUrl() + "/booking");
 
         return response.as(new TypeRef<List<BookingResponse>>() {});
     }
 
-    public BookingDetailsResponse getBookingById(int id){
-        Response response = get(BASE_URL + "/booking/" + id);
+    public BookingDetailsResponse getBookingById(int id) {
+
+        Response response = get(getBaseUrl() + "/booking/" + id);
 
         return handleResponse(
-                response, BookingDetailsResponse.class, ErrorResponse.class);
+                response,
+                BookingDetailsResponse.class,
+                ErrorResponse.class
+        );
     }
 
     public BookingResponse createBooking(CreateBookingRequest request) {
 
         Response response = post(
-                BASE_URL + "/booking",
+                getBaseUrl() + "/booking",
                 request
         );
 
@@ -47,9 +53,12 @@ public class BookingService extends AuthService{
     }
 
     public BookingResponse updateBooking(int bookingId,
-                                                CreateBookingRequest request) {
+                                         CreateBookingRequest request) {
 
-        Response response = put(request,BASE_URL + "/booking/" + bookingId);
+        Response response = put(
+                request,
+                getBaseUrl() + "/booking/" + bookingId
+        );
 
         return handleResponse(
                 response,
@@ -57,5 +66,4 @@ public class BookingService extends AuthService{
                 ErrorResponse.class
         );
     }
-
 }
