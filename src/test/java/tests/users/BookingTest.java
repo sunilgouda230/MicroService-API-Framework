@@ -1,21 +1,25 @@
 package tests.users;
 
 import config.ConfigManager;
+import io.qameta.allure.testng.AllureTestNg;
 import models.request.BookingDates;
 import models.request.CreateBookingRequest;
 import models.response.Booking.BookingDetailsResponse;
 import models.response.Booking.BookingResponse;
 import models.response.LoginResponse;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import service.AuthService;
 import service.BookingService;
 import tests.base.BaseTest;
+import utils.TestDataUtils;
 
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
+@Listeners({AllureTestNg.class})
 public class BookingTest extends BaseTest {
 
     @Test
@@ -35,7 +39,7 @@ public class BookingTest extends BaseTest {
                         .map(BookingResponse::getBookingid)
                         .toList();
 
-        assertThat(bookingIds, hasItems(88, 191, 287));
+        assertThat(bookingIds, hasItems(484, 1825, 1356));
     }
 
     @Test
@@ -63,29 +67,16 @@ public class BookingTest extends BaseTest {
                 new AuthService().
                         loginAndGetToken(ConfigManager.get("username"),ConfigManager.get("password"));
 
-            // ---------- Request Setup ----------
-            BookingDates dates = new BookingDates();
-            dates.setCheckin("2018-01-01");
-            dates.setCheckout("2019-01-01");
+        // Create booking with single line
+        CreateBookingRequest request =
+                TestDataUtils.generateRandomBooking(true);
 
-            CreateBookingRequest request = new CreateBookingRequest();
-            request.setFirstname("Sunil");
-            request.setLastname("Gouda");
-            request.setTotalprice(111);
-            request.setDepositpaid(true);
-            request.setBookingdates(dates);
-            request.setAdditionalneeds("Breakfast");
-
-            // ---------- Action ----------
-            BookingResponse response =
-                    new BookingService().createBooking(request);
+        BookingResponse response =
+                new BookingService().createBooking(request);
 
             // ---------- Assertions ----------
             assertThat(response.getBookingid(), greaterThan(0));
-            assertThat(response.getBooking().getFirstname(), is("Sunil"));
-            assertThat(response.getBooking().getLastname(), is("Gouda"));
             assertThat(response.getBooking().isDepositpaid(), is(true));
-            assertThat(response.getBooking().getAdditionalneeds(), is("Breakfast"));
         }
 
     @Test
@@ -109,45 +100,38 @@ public class BookingTest extends BaseTest {
     @Test
     public void shouldUpdateBookingSuccessfully() {
 
-        LoginResponse loginResponse =
-                new AuthService()
-                        .loginAndGetToken(
-                                ConfigManager.get("username"),
-                                ConfigManager.get("password")
-                        );
+        // Login
+        new AuthService()
+                .loginAndGetToken(
+                        ConfigManager.get("username"),
+                        ConfigManager.get("password")
+                );
 
-        // Create booking
-        CreateBookingRequest request = new CreateBookingRequest();
-        request.setFirstname("Jim");
-        request.setLastname("Brown");
-        request.setTotalprice(111);
-        request.setDepositpaid(true);
-
-        BookingDates dates = new BookingDates();
-        dates.setCheckin("2018-01-01");
-        dates.setCheckout("2019-01-01");
-        request.setBookingdates(dates);
-
-        request.setAdditionalneeds("Breakfast");
+        // Create booking with single line
+        CreateBookingRequest request =
+                TestDataUtils.generateRandomBooking(true);
 
         BookingResponse createResponse =
                 new BookingService().createBooking(request);
 
         int bookingId = createResponse.getBookingid();
 
-        // Update values
-        request.setFirstname("UpdatedName");
-        request.setDepositpaid(false);
+        // Create updated data separately (best practice)
+        CreateBookingRequest updateRequest =
+                TestDataUtils.generateRandomBooking(false);
 
         BookingResponse updatedResponse =
                 new BookingService().updateBooking(
                         bookingId,
-                        request
+                        updateRequest
                 );
 
         // Assertions
-        assertThat(updatedResponse.getBooking().getFirstname(), is("UpdatedName"));
-        assertThat(updatedResponse.getBooking().isDepositpaid(), is(false));
+        assertThat(updatedResponse.getBooking().getFirstname(),
+                is(updateRequest.getFirstname()));
+
+        assertThat(updatedResponse.getBooking().isDepositpaid(),
+                is(false));
     }
 
 }

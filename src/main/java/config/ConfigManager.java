@@ -1,6 +1,6 @@
 package config;
 
-import java.io.*;
+import java.io.InputStream;
 import java.util.Properties;
 
 public class ConfigManager {
@@ -8,28 +8,30 @@ public class ConfigManager {
     private static final Properties properties = new Properties();
 
     static {
-        try (FileInputStream is = new FileInputStream("config.properties")) {
-            properties.load(is);
-        } catch (IOException ignored) {
+        try {
+            InputStream input =
+                    ConfigManager.class.getClassLoader()
+                            .getResourceAsStream("config.properties");
+
+            if (input != null) {
+                properties.load(input);
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load config.properties");
         }
     }
 
     public static String get(String key) {
 
-        // 1️⃣ Check JVM system property (-Dbase.url=...)
-        String value = System.getProperty(key);
-        if (value != null) {
-            return value;
+        // 1️⃣ First check environment variable
+        String envValue = System.getenv(key.toUpperCase());
+
+        if (envValue != null && !envValue.isEmpty()) {
+            return envValue;
         }
 
-        // 2️⃣ Check environment variable (BASE_URL)
-        String envKey = key.toUpperCase().replace(".", "_");
-        value = System.getenv(envKey);
-        if (value != null) {
-            return value;
-        }
-
-        // 3️⃣ Fallback to config.properties
+        // 2️⃣ Fallback to properties file
         return properties.getProperty(key);
     }
 }

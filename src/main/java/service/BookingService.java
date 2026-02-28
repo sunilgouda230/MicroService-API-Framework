@@ -14,6 +14,7 @@ public class BookingService extends AuthService {
 
     private String getBaseUrl() {
         String baseUrl = ConfigManager.get("base.url");
+        System.out.println("the base url "+ baseUrl);
         if (baseUrl == null || baseUrl.isBlank()) {
             throw new RuntimeException("BASE_URL is not configured properly.");
         }

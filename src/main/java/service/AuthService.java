@@ -10,18 +10,24 @@ import models.response.LoginResponse;
 
 public class AuthService extends BaseRequest {
 
-    private static final String BASE_URL = ConfigManager.get("auth.base.url");
+    private String getBaseUrl() {
+        return ConfigManager.get("base.url");
+    }
 
     public LoginResponse loginAndGetToken(String username, String password){
 
         LoginRequest loginRequest = new LoginRequest(username, password);
 
-        Response response = post(BASE_URL + "/auth", loginRequest);
+        Response response = post(
+                getBaseUrl() + "/auth",
+                loginRequest
+        );
 
-        LoginResponse loginResponse = handleResponse(response,LoginResponse.class,ErrorResponse.class);
+        LoginResponse loginResponse =
+                handleResponse(response, LoginResponse.class, ErrorResponse.class);
 
-        TokenManager.setToken("admin",loginResponse.getToken());
+        TokenManager.setToken("admin", loginResponse.getToken());
 
-        return handleResponse(response, LoginResponse.class, ErrorResponse.class);
+        return loginResponse;
     }
 }
