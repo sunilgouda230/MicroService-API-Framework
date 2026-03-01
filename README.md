@@ -1,9 +1,3 @@
-Perfect 👍
-Below is a **full-fledged, production-quality `README.md`** that you can **directly copy-paste** into your repo.
-This is written at **SDET-3 / Senior QE level**, suitable for **assignments + interviews**.
-
----
-
 # 📘 API Automation Framework
 
 **Rest Assured | TestNG | Allure | Maven | GitHub Actions**
