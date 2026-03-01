@@ -54,11 +54,15 @@ https://restful-booker.herokuapp.com
 │   │       ├── core
 │   │       │   └── BaseRequest.java         # Common request specification
 │   │       ├── models
-│   │       │   ├── request                 # Request POJOs
-│   │       │   └── response                # Response POJOs
+│   │       │   ├── request                  #Request model
+|               ├── common                   #Error model               
+│   │       │   └── response                 #Response model                
 │   │       └── service
-│   │           ├── AuthService.java        # Auth APIs
-│   │           └── BookingService.java     # Booking APIs
+│   │       |   ├── AuthService.java        # Auth APIs
+│   │       |    └── BookingService.java     # Booking APIs
+            └── utils
+│   │           ├── ResponseUtil.java        
+│   │           └── TestDataUtils.java     
 │   └── test
 │       └── java
 │           └── tests
@@ -87,27 +91,6 @@ The framework uses environment variables for sensitive data.
 | USERNAME | Admin username |
 | PASSWORD | Admin password |
 
----
-
-### Local Setup (Mac / Linux)
-
-```bash
-export BASE_URL=https://restful-booker.herokuapp.com
-export USERNAME=admin
-export PASSWORD=password123
-```
-
----
-
-### Local Setup (Windows – PowerShell)
-
-```powershell
-setx BASE_URL "https://restful-booker.herokuapp.com"
-setx USERNAME "admin"
-setx PASSWORD "password123"
-```
-
----
 
 ### GitHub Actions Secrets
 
