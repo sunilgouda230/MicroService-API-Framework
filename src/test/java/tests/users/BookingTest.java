@@ -1,6 +1,10 @@
 package tests.users;
 
 import config.ConfigManager;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Step;
+import io.qameta.allure.Story;
 import io.qameta.allure.testng.AllureTestNg;
 import io.restassured.response.Response;
 import models.request.CreateBookingRequest;
@@ -22,6 +26,10 @@ import static org.hamcrest.Matchers.*;
 @Listeners({AllureTestNg.class})
 public class BookingTest extends BaseTest {
 
+    @Epic("Booking API")
+    @Feature("Get Booking")
+    @Story("Verify booking Ids are present or not")
+    @Step("Fetch all bookings and validate booking IDs")
     @Test
     public void checkBookingIdsPresentOrNot(){
         LoginResponse loginResponse =
@@ -42,6 +50,9 @@ public class BookingTest extends BaseTest {
         assertThat(bookingIds.size(), greaterThan(0));
     }
 
+    @Epic("Booking API")
+    @Feature("Get Booking")
+    @Story("Verify deposit paid flag")
     @Test
     public void checkDepositPaidIsSelectedOrNot() {
 
@@ -60,6 +71,9 @@ public class BookingTest extends BaseTest {
         assertThat(bookingDetails.isDepositpaid(), is(true));
     }
 
+    @Epic("Booking API")
+    @Feature("Create Booking")
+    @Story("Creating new Booking")
     @Test
     public void createBookingForNewUser(){
 
@@ -79,6 +93,9 @@ public class BookingTest extends BaseTest {
             assertThat(response.getBooking().isDepositpaid(), is(true));
         }
 
+    @Epic("Booking API")
+    @Feature("Get Booking")
+    @Story("Verify invalid booking and verify status and error message in body")
     @Test
     public void shouldFailForInvalidBookingId() {
         LoginResponse loginResponse =
@@ -97,7 +114,9 @@ public class BookingTest extends BaseTest {
         }
     }
 
-
+    @Epic("Booking API")
+    @Feature("Delete Booking")
+    @Story("Delete the existing booking and checked the status")
    @Test
     public void deleteBookingById(){
        LoginResponse loginResponse =

@@ -1,6 +1,7 @@
 package core;
 
 import auth.TokenManager;
+import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -10,11 +11,13 @@ public class BaseRequest {
 
     protected RequestSpecification request;
 
-    public BaseRequest(){
-        request = RestAssured.given().
-                contentType(ContentType.JSON).
-                header("Cookie", "token=" + TokenManager.getToken("admin")).
-                log().all();
+    public BaseRequest() {
+        request = RestAssured
+                .given()
+                .filter(new AllureRestAssured())   // Allure integration
+                .contentType(ContentType.JSON)
+                .header("Cookie", "token=" + TokenManager.getToken("admin"))
+                .log().all();
     }
 
     protected Response post(String endpoint, Object body){
