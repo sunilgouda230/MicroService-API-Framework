@@ -13,7 +13,7 @@ public class BaseRequest {
     public BaseRequest(){
         request = RestAssured.given().
                 contentType(ContentType.JSON).
-                header("Authorization", "Bearer " + TokenManager.getToken("admin")).
+                header("Cookie", "token=" + TokenManager.getToken("admin")).
                 log().all();
     }
 

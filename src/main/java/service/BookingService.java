@@ -39,6 +39,11 @@ public class BookingService extends AuthService {
         );
     }
 
+    public Response getBookingRawResponse(int id) {
+
+        return get(getBaseUrl() + "/booking/" + id);
+    }
+
     public BookingResponse createBooking(CreateBookingRequest request) {
 
         Response response = post(
@@ -56,10 +61,7 @@ public class BookingService extends AuthService {
     public BookingResponse updateBooking(int bookingId,
                                          CreateBookingRequest request) {
 
-        Response response = put(
-                request,
-                getBaseUrl() + "/booking/" + bookingId
-        );
+        Response response = put(request, getBaseUrl() + "/booking/" + bookingId);
 
         return handleResponse(
                 response,
@@ -67,4 +69,10 @@ public class BookingService extends AuthService {
                 ErrorResponse.class
         );
     }
+
+    public Response deleteBooking(int bookingId) {
+
+       return delete(getBaseUrl() + "/booking/" + bookingId);
+    }
+
 }

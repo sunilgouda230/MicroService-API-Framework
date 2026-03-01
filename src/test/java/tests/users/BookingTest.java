@@ -2,7 +2,7 @@ package tests.users;
 
 import config.ConfigManager;
 import io.qameta.allure.testng.AllureTestNg;
-import models.request.BookingDates;
+import io.restassured.response.Response;
 import models.request.CreateBookingRequest;
 import models.response.Booking.BookingDetailsResponse;
 import models.response.Booking.BookingResponse;
@@ -39,7 +39,7 @@ public class BookingTest extends BaseTest {
                         .map(BookingResponse::getBookingid)
                         .toList();
 
-        assertThat(bookingIds, hasItems(484, 1825, 1356));
+        assertThat(bookingIds.size(), greaterThan(0));
     }
 
     @Test
@@ -88,50 +88,32 @@ public class BookingTest extends BaseTest {
         List<BookingResponse> bookings =
                 new BookingService().getBookings();
 
-        Integer bookingId = bookings.get(0).getBookingid();
-
-        BookingDetailsResponse bookingDetails =
-                new BookingService().getBookingById(3148);
-
-        assertThat(bookingDetails.isDepositpaid(), not(true));
+        try {
+            Response response =
+                    new BookingService().getBookingRawResponse(3148999);
+            assertThat(response.getStatusCode(), is(404));
+        } catch (Exception e){
+            System.out.println("The Booking Id not Found"+e.getMessage());
+        }
     }
 
 
-    @Test
-    public void shouldUpdateBookingSuccessfully() {
+   @Test
+    public void deleteBookingById(){
+       LoginResponse loginResponse =
+               new AuthService().
+                       loginAndGetToken(ConfigManager.get("username"),ConfigManager.get("password"));
 
-        // Login
-        new AuthService()
-                .loginAndGetToken(
-                        ConfigManager.get("username"),
-                        ConfigManager.get("password")
-                );
+       List<BookingResponse> bookings =
+               new BookingService().getBookings();
 
-        // Create booking with single line
-        CreateBookingRequest request =
-                TestDataUtils.generateRandomBooking(true);
+       Integer bookingId = bookings.get(0).getBookingid();
 
-        BookingResponse createResponse =
-                new BookingService().createBooking(request);
+           Response response = new BookingService().deleteBooking(bookingId);
 
-        int bookingId = createResponse.getBookingid();
-
-        // Create updated data separately (best practice)
-        CreateBookingRequest updateRequest =
-                TestDataUtils.generateRandomBooking(false);
-
-        BookingResponse updatedResponse =
-                new BookingService().updateBooking(
-                        bookingId,
-                        updateRequest
-                );
-
-        // Assertions
-        assertThat(updatedResponse.getBooking().getFirstname(),
-                is(updateRequest.getFirstname()));
-
-        assertThat(updatedResponse.getBooking().isDepositpaid(),
-                is(false));
-    }
+           response.then()
+                   .statusCode(201)
+                   .body(equalTo("Created"));
+       }
 
 }

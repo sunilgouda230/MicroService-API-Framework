@@ -26,12 +26,9 @@ public class TestDataUtils {
     public static void applyRandomDates(CreateBookingRequest request) {
 
         BookingDates dates = new BookingDates();
-
-        // Generate random check-in date within next 30 days
         LocalDate checkin = LocalDate.now()
                 .plusDays(faker.number().numberBetween(1, 30));
 
-        // Checkout 1–10 days after checkin
         LocalDate checkout = checkin
                 .plusDays(faker.number().numberBetween(1, 10));
 
@@ -41,7 +38,7 @@ public class TestDataUtils {
         request.setBookingdates(dates);
     }
 
-    // 🔥 NEW METHOD – Complete Booking Builder
+
     public static CreateBookingRequest generateRandomBooking(boolean depositPaid) {
 
         CreateBookingRequest request = new CreateBookingRequest();
